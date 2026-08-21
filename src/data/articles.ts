@@ -11,6 +11,8 @@ export type Article = {
   description: string;
   eyebrow: string;
   readTime: string;
+  publishedDate: string;
+  updatedDate: string;
   answer: string;
   takeaways: string[];
   sections: {
@@ -48,6 +50,8 @@ export const articles: Article[] = [
     description: '用四个指标判断游戏网络质量，并理解为什么“平均 Ping 不高”仍可能卡顿。',
     eyebrow: '指标总览',
     readTime: '4 分钟',
+    publishedDate: '2026-08-21',
+    updatedDate: '2026-08-21',
     answer:
       '游戏网络质量不能只看一个平均 Ping。至少同时观察往返时延（RTT）、丢包、延迟波动和连续性；其中任何一项异常，都可能表现为瞬移、操作延后或语音断续。',
     takeaways: [
@@ -86,7 +90,11 @@ export const articles: Article[] = [
         ],
       },
     ],
-    related: ['ping-vs-rtt', 'packet-delay-variation', 'burst-packet-loss'],
+    related: [
+      'ping-vs-rtt',
+      'packet-delay-variation',
+      'burst-packet-loss',
+    ],
     sources: [ietf3393, ietf6673],
   },
   {
@@ -96,6 +104,8 @@ export const articles: Article[] = [
     description: '解释 Ping 命令、ICMP 与 RTT 的关系，以及为什么游戏内延迟和系统 Ping 结果可能不同。',
     eyebrow: '基础概念',
     readTime: '3 分钟',
+    publishedDate: '2026-08-21',
+    updatedDate: '2026-08-21',
     answer:
       'RTT 是往返时延这个指标；Ping 通常指用于发出 ICMP Echo 请求并测量往返时间的工具或操作。游戏内显示的“Ping”也常代表延迟，但它可能使用游戏协议、采样窗口和目标服务器，因此不一定等于系统 Ping 命令的结果。',
     takeaways: [
@@ -144,6 +154,8 @@ export const articles: Article[] = [
     description: '理解 packet delay variation 与玩家常说的 jitter，并用时间序列识别不稳定网络。',
     eyebrow: '稳定性指标',
     readTime: '3 分钟',
+    publishedDate: '2026-08-21',
+    updatedDate: '2026-08-21',
     answer:
       '延迟波动描述数据包时延随时间的变化。两次测试即使平均 RTT 相同，只要其中一组频繁出现高低跳变，实时操作和语音就可能更不稳定。判断时应查看连续样本或时间序列，而不是只看平均值。',
     takeaways: [
@@ -171,7 +183,11 @@ export const articles: Article[] = [
         ],
       },
     ],
-    related: ['game-network-quality', 'ping-vs-rtt', 'burst-packet-loss'],
+    related: [
+      'game-network-quality',
+      'ping-vs-rtt',
+      'burst-packet-loss',
+    ],
     sources: [ietf3393],
   },
   {
@@ -181,6 +197,8 @@ export const articles: Article[] = [
     description: '解释连续丢包、零星丢包和平均丢包率的差异，提供可复现的记录方式。',
     eyebrow: '丢包模式',
     readTime: '3 分钟',
+    publishedDate: '2026-08-21',
+    updatedDate: '2026-08-21',
     answer:
       '平均丢包率只说明总量，不说明丢失怎样分布。相同比例下，连续多个包丢失会造成更长的反馈空档，通常比零星分散的丢失更容易被玩家感知，因此需要同时记录最长连续丢包和发生时间。',
     takeaways: [
@@ -218,6 +236,8 @@ export const articles: Article[] = [
     description: '一套不依赖特定游戏或品牌的排查顺序：先复现，再做近端、负载、接入与路径对照。',
     eyebrow: '诊断入口',
     readTime: '5 分钟',
+    publishedDate: '2026-08-21',
+    updatedDate: '2026-08-21',
     answer:
       '排查游戏卡顿时，先确认是帧率问题还是网络问题；如果是网络，再按“本机与家庭网关 → Wi-Fi/有线 → 空闲/负载 → 外部路径 → 游戏服务器”逐层做对照。每次只改变一个条件，才能知道哪一步真正影响结果。',
     takeaways: [
@@ -262,7 +282,11 @@ export const articles: Article[] = [
         ],
       },
     ],
-    related: ['low-ping-but-lag', 'game-network-quality', 'burst-packet-loss'],
+    related: [
+      'low-ping-but-lag',
+      'game-network-quality',
+      'burst-packet-loss',
+    ],
     sources: [msPathping, ietf3393, ietf6673],
   },
   {
@@ -272,6 +296,8 @@ export const articles: Article[] = [
     description: '平均延迟正常但仍卡顿时，检查尖峰、突发丢包、本机帧率、服务器处理和输入链路。',
     eyebrow: '症状诊断',
     readTime: '4 分钟',
+    publishedDate: '2026-08-21',
+    updatedDate: '2026-08-21',
     answer:
       '低 Ping 只说明被展示的采样在统计窗口内较低，不代表没有短时尖峰、突发丢包或本机性能问题。应同时查看连续 RTT、丢包分布、帧率或帧时间，并确认游戏内数字的目标与采样方式。',
     takeaways: [
@@ -311,7 +337,11 @@ export const articles: Article[] = [
         ],
       },
     ],
-    related: ['game-lag-diagnostic-tree', 'packet-delay-variation', 'burst-packet-loss'],
+    related: [
+      'game-lag-diagnostic-tree',
+      'packet-delay-variation',
+      'burst-packet-loss',
+    ],
     sources: [ietf3393, ietf6673],
   },
 ];
