@@ -50,11 +50,11 @@ https://game-network-lab-cn.github.io/
 
 项目使用 Astro 静态构建，并通过 GitHub Actions 自动部署到 GitHub Pages。
 
-仓库：
+仓库地址：
 
 https://github.com/game-network-lab-cn/game-network-lab-cn.github.io
 
-正式地址：
+网站地址：
 
 https://game-network-lab-cn.github.io/
 
