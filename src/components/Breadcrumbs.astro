@@ -1,0 +1,10 @@
+---
+import { pathWithBase } from '../data/site';
+interface Item { label: string; href?: string }
+const { items } = Astro.props as { items: Item[] };
+---
+<nav class="breadcrumbs" aria-label="面包屑">
+  {items.map((item, index) => (
+    <span>{item.href ? <a href={pathWithBase(item.href)}>{item.label}</a> : item.label}{index < items.length - 1 && <b aria-hidden="true">/</b>}</span>
+  ))}
+</nav>

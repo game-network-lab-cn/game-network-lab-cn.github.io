@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="游戏网络测试记录模板" description="在浏览器本地填写并打印的游戏网络测试记录，不上传任何表单数据。" noindex={true}>
+  <article class="simple-page">
+    <p class="eyebrow">Local worksheet</p><h1>游戏网络测试记录</h1>
+    <p class="lead">先写清条件，再开始测试。所有字段只保留在当前页面；完成后可用浏览器打印为 PDF。</p>
+    <div class="notice"><strong>隐私提醒：</strong>不要填写完整公网 IP、账户名、设备序列号或密码。目标可写“家庭网关”“公共测试目标”或“游戏服务器区域”。</div>
+    <form class="record-form" onsubmit="return false">
+      <fieldset><legend>01 · 场景</legend><div class="form-grid">
+        <label>测试开始时间<input type="datetime-local" /></label>
+        <label>地区与运营商<input type="text" placeholder="例如：华东 / 某运营商" /></label>
+        <label>设备类型<input type="text" placeholder="例如：Windows 台式机" /></label>
+        <label>接入方式<select><option>有线</option><option>Wi-Fi 5 GHz</option><option>Wi-Fi 2.4 GHz</option><option>其他</option></select></label>
+        <label>游戏与服务器区域<input type="text" placeholder="不填写账号或对局隐私" /></label>
+        <label>可观察症状<input type="text" placeholder="瞬移、操作晚到、语音断续等" /></label>
+      </div></fieldset>
+      <fieldset><legend>02 · 本轮只改变一个条件</legend><div class="form-grid">
+        <label>对照前<input type="text" placeholder="例如：Wi-Fi" /></label>
+        <label>对照后<input type="text" placeholder="例如：有线" /></label>
+      </div></fieldset>
+      <fieldset><legend>03 · 结果</legend><div class="form-grid">
+        <label>测试目标类别<input type="text" placeholder="家庭网关 / 外部目标 / 游戏区域" /></label>
+        <label>样本数量与持续时间<input type="text" placeholder="例如：300 个 / 5 分钟" /></label>
+        <label>RTT：平均 / 最大<input type="text" placeholder="写明单位" /></label>
+        <label>丢包：总比例 / 最长连续<input type="text" placeholder="同时记录连续分布" /></label>
+      </div><label style="margin-top:18px">异常时间点与观察<textarea placeholder="记录尖峰、连续丢失、帧时间或多人同时异常的时刻"></textarea></label></fieldset>
+      <fieldset><legend>04 · 暂时结论</legend><label>证据支持什么，还不能说明什么<textarea placeholder="区分观察事实、推断与下一步建议"></textarea></label></fieldset>
+      <div class="form-actions"><button type="button" class="button button-primary" onclick="window.print()">打印 / 保存为 PDF</button><button type="reset" class="button" style="border-color:#aeb9b6;background:#fff">清空表单</button></div>
+      <p class="privacy-inline">表单没有提交按钮，也不包含远程存储脚本。</p>
+    </form>
+  </article>
+</BaseLayout>

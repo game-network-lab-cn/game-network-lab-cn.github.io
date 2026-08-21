@@ -1,0 +1,80 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+import { SITE_DESCRIPTION, SITE_NAME, UPDATED_DATE, pathWithBase } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title,
+  description = SITE_DESCRIPTION,
+  image = '/images/latency-lab-hero.png',
+  noindex = false,
+  schema,
+} = Astro.props;
+const pageTitle = title ? `${title}｜${SITE_NAME}` : `${SITE_NAME}｜游戏延迟、丢包与网络诊断`;
+const canonical = Astro.url.href;
+const imageUrl = new URL(pathWithBase(image), Astro.site || Astro.url.origin).href;
+const defaultSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  url: new URL(pathWithBase('/'), Astro.site || Astro.url.origin).href,
+  description: SITE_DESCRIPTION,
+  inLanguage: 'zh-CN',
+  dateModified: UPDATED_DATE,
+};
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101719" />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex,follow" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={pathWithBase('/favicon.svg')} type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:alt" content="低延迟实验室的游戏网络诊断工作台" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>{pageTitle}</title>
+    <script type="application/ld+json" set:html={JSON.stringify(schema || defaultSchema)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到正文</a>
+    <Header />
+    <main id="main"><slot /></main>
+    <Footer />
+    <script is:inline>
+      const observed = document.querySelectorAll('[data-reveal]');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12 });
+        observed.forEach((element) => observer.observe(element));
+      } else {
+        observed.forEach((element) => element.classList.add('is-visible'));
+      }
+    </script>
+  </body>
+</html>
