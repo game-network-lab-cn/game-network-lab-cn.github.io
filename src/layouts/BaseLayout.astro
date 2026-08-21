@@ -53,6 +53,23 @@ const defaultSchema = {
 <!doctype html>
 <html lang="zh-CN">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      is:inline
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-E2N2PMCK8F"
+    ></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+
+      function gtag() {
+        window.dataLayer.push(arguments);
+      }
+
+      gtag('js', new Date());
+      gtag('config', 'G-E2N2PMCK8F');
+    </script>
+
     <meta charset="UTF-8" />
     <meta
       name="viewport"
