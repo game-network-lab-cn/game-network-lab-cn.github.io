@@ -64,6 +64,68 @@ https://game-network-lab-cn.github.io/
 
 需要 Node.js 24 或以上版本。
 
-```bash
-npm install
-npm run dev
+常用命令：
+
+- 安装依赖：`npm install`
+- 启动开发环境：`npm run dev`
+- 检查并构建：`npm run build`
+- 预览生产结果：`npm run preview`
+
+## 自动部署
+
+提交到 `main` 分支后，GitHub Actions 会自动执行：
+
+1. 安装依赖
+2. 执行项目校验
+3. 执行 Astro 类型检查
+4. 构建静态网站
+5. 上传 GitHub Pages 产物
+6. 部署网站
+7. 部署成功后通知 IndexNow
+
+工作流文件：
+
+- `.github/workflows/deploy.yml`
+- `.github/workflows/indexnow.yml`
+
+## 发布后检查
+
+每次更新后应确认：
+
+- `Deploy to GitHub Pages` 工作流成功
+- `Notify IndexNow` 工作流成功
+- 首页和文章页面可以访问
+- robots.txt 可以访问
+- sitemap.xml 可以访问
+- Canonical 使用正式 GitHub Pages 地址
+- 内部链接没有旧的 `/game-network-lab/` 路径
+- 移动端导航、表格和表单显示正常
+
+## 内容边界
+
+本站不负责：
+
+- 优途品牌入口
+- 优途官方下载
+- 客户端安装教程
+- 账号与登录问题
+- 客户端连接问题
+- 节点选择
+- 优途客户端故障排查
+
+这些内容分别属于优途官方入口站和优途使用帮助中心。
+
+本站不自行发布未经重新核验的价格、套餐、节点数量、活动、下载版本或系统支持信息。
+
+## 隐私
+
+网络测试记录模板仅在浏览器本地运行，不提交用户填写的数据。
+
+公开诊断材料前，应遮盖：
+
+- 完整公网 IP
+- 账户名
+- 设备序列号
+- Wi-Fi 密码
+- 访问令牌
+- 不必要的网络标识
