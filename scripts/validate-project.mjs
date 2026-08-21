@@ -1,4 +1,8 @@
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import {
+  existsSync,
+  readFileSync,
+  statSync,
+} from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
@@ -52,29 +56,51 @@ const baseLayout = readFileSync(
   'utf8',
 );
 
-const metadataMarkers = [
-  'rel="canonical"',
-  'og:title',
-  'application/ld+json',
-  'meta name="description"',
+const metadataChecks = [
+  {
+    label: 'canonical link',
+    pattern: /rel=["']canonical["']/,
+  },
+  {
+    label: 'Open Graph title',
+    pattern: /property=["']og:title["']/,
+  },
+  {
+    label: 'JSON-LD data',
+    pattern: /type=["']application\/ld\+json["']/,
+  },
+  {
+    label: 'description metadata',
+    pattern: /name=["']description["']/,
+  },
 ];
 
-for (const marker of metadataMarkers) {
-  if (!baseLayout.includes(marker)) {
-    failures.push(`Missing page metadata marker: ${marker}`);
+for (const check of metadataChecks) {
+  if (!check.pattern.test(baseLayout)) {
+    failures.push(
+      `Missing page metadata: ${check.label}`,
+    );
   }
 }
 
 const heroBytes = statSync(
-  resolve(root, 'public/images/latency-lab-hero.webp'),
+  resolve(
+    root,
+    'public/images/latency-lab-hero.webp',
+  ),
 ).size;
 
 if (heroBytes > 600_000) {
-  failures.push(`Hero WebP is too large: ${heroBytes} bytes.`);
+  failures.push(
+    `Hero WebP is too large: ${heroBytes} bytes.`,
+  );
 }
 
 const socialImageBytes = statSync(
-  resolve(root, 'public/images/latency-lab-hero.png'),
+  resolve(
+    root,
+    'public/images/latency-lab-hero.png',
+  ),
 ).size;
 
 if (socialImageBytes > 1_000_000) {
@@ -89,7 +115,9 @@ const sourceFiles = [
   'src/layouts/ArticleLayout.astro',
   'src/pages/index.astro',
 ]
-  .map((file) => readFileSync(resolve(root, file), 'utf8'))
+  .map((file) =>
+    readFileSync(resolve(root, file), 'utf8'),
+  )
   .join('\n');
 
 if (/href=["']\//.test(sourceFiles)) {
@@ -100,8 +128,11 @@ if (/href=["']\//.test(sourceFiles)) {
 
 if (failures.length > 0) {
   console.error(
-    failures.map((failure) => `- ${failure}`).join('\n'),
+    failures
+      .map((failure) => `- ${failure}`)
+      .join('\n'),
   );
+
   process.exit(1);
 }
 
