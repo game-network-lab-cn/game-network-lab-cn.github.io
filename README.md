@@ -27,11 +27,43 @@ https://game-network-lab-cn.github.io/
 
 主要目录：
 
-```text
-public/                 静态图片与公开资源
-scripts/                项目校验和发布辅助脚本
-src/components/         页面公共组件
-src/data/               文章与站点数据
-src/layouts/            页面布局
-src/pages/              页面和公开文本端点
-src/styles/             全站样式
+- `public/`：静态图片与公开资源
+- `scripts/`：项目校验和发布辅助脚本
+- `src/components/`：页面公共组件
+- `src/data/`：文章与站点数据
+- `src/layouts/`：页面布局
+- `src/pages/`：页面和公开文本端点
+- `src/styles/`：全站样式
+
+## 本地运行
+
+需要 Node.js 24 或以上版本。
+
+常用命令：
+
+- 安装依赖：`npm install`
+- 启动本地开发环境：`npm run dev`
+- 执行检查并构建网站：`npm run build`
+- 预览构建结果：`npm run preview`
+
+## 部署
+
+提交到 `main` 分支后，GitHub Actions 会自动检查、构建并部署网站。
+
+正式网站使用 GitHub Pages 提供的根站地址：
+
+https://game-network-lab-cn.github.io/
+
+本项目不使用自定义域名、DNS 或 CNAME 文件。
+
+## 内容原则
+
+网站内容区分观察事实、合理推断和操作建议，不把单次测速或一张路由截图作为确定责任的证据。
+
+技术定义优先参考标准组织、操作系统厂商和其他可靠的一手资料。页面过时或结论发生变化时，应更新原页面。
+
+## 隐私
+
+网络测试记录模板仅在当前浏览器页面中运行，不会向本站提交填写内容，也不会自动保存数据。
+
+公开诊断材料前，请遮盖完整公网 IP、账户名、设备序列号、Wi-Fi 密码、访问令牌和其他不必要的网络标识。
