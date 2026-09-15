@@ -1,0 +1,142 @@
+---
+const referralUrl = new URL('https://youtujsq9.net/');
+
+referralUrl.searchParams.set('utm_source', 'low_latency_lab');
+referralUrl.searchParams.set('utm_medium', 'referral');
+referralUrl.searchParams.set('utm_campaign', 'article_banner');
+---
+
+<aside class="referral-banner" aria-labelledby="referral-banner-title">
+  <div class="referral-copy">
+    <p class="referral-label">广告 · 优途官网</p>
+    <h2 id="referral-banner-title">
+      完成基础排查后，再判断是否需要网络加速服务。
+    </h2>
+    <p>
+      优途官网提供当前产品说明与官方入口。是否适合你的网络情况，应以实际测试和官网当前信息为准。
+    </p>
+  </div>
+
+  <a
+    class="referral-link"
+    href={referralUrl.href}
+    target="_blank"
+    rel="sponsored noopener noreferrer"
+    data-referral-banner
+  >
+    前往优途官网
+    <span aria-hidden="true">→</span>
+  </a>
+
+  <p class="referral-disclosure">
+    商业链接不会改变本文的诊断结论，也不代表使用后一定能够降低延迟。
+  </p>
+</aside>
+
+<script is:inline>
+  document.querySelectorAll('[data-referral-banner]').forEach((link) => {
+    link.addEventListener('click', () => {
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'referral_banner_click', {
+          link_url: link.href,
+          link_text: link.textContent.trim(),
+          link_domain: 'youtujsq9.net',
+        });
+      }
+    });
+  });
+</script>
+
+<style>
+  .referral-banner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 22px 34px;
+    align-items: center;
+    margin: 0 0 72px;
+    padding: 30px;
+    color: var(--white);
+    background: var(--ink);
+    border-top: 4px solid var(--signal);
+  }
+
+  .referral-copy {
+    min-width: 0;
+  }
+
+  .referral-label {
+    margin: 0 0 8px;
+    color: var(--signal);
+    font-size: 0.76rem;
+    font-weight: 850;
+  }
+
+  .referral-copy h2 {
+    margin: 0;
+    color: var(--white);
+    font-size: 1.45rem;
+    line-height: 1.3;
+  }
+
+  .referral-copy > p:last-child {
+    max-width: 620px;
+    margin: 12px 0 0;
+    color: #c9d3d0;
+    font-size: 0.94rem;
+  }
+
+  .referral-link {
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 11px 18px;
+    color: #071716;
+    background: var(--signal);
+    border: 1px solid var(--signal);
+    border-radius: 4px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: transform 0.18s ease, background 0.18s ease;
+  }
+
+  .referral-link:hover {
+    background: #5cebd3;
+    transform: translateY(-2px);
+  }
+
+  .referral-link span {
+    transition: transform 0.18s ease;
+  }
+
+  .referral-link:hover span {
+    transform: translateX(3px);
+  }
+
+  .referral-disclosure {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding-top: 18px;
+    color: #9fadaa;
+    border-top: 1px solid var(--line-dark);
+    font-size: 0.78rem;
+  }
+
+  @media (max-width: 720px) {
+    .referral-banner {
+      grid-template-columns: 1fr;
+      padding: 24px 22px;
+    }
+
+    .referral-link {
+      width: 100%;
+    }
+  }
+
+  @media print {
+    .referral-banner {
+      display: none;
+    }
+  }
+</style>
