@@ -13,6 +13,7 @@ interface Props {
   description?: string;
   image?: string;
   noindex?: boolean;
+  socialType?: 'website' | 'article';
   schema?:
     | Record<string, unknown>
     | Record<string, unknown>[];
@@ -23,6 +24,7 @@ const {
   description = SITE_DESCRIPTION,
   image = '/images/latency-lab-hero.png',
   noindex = false,
+  socialType = 'website',
   schema,
 } = Astro.props;
 
@@ -102,7 +104,7 @@ const defaultSchema = {
 
     <meta
       property="og:type"
-      content="website"
+      content={socialType}
     />
     <meta
       property="og:locale"

@@ -1,0 +1,199 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { pathWithBase } from '../../data/site';
+---
+<BaseLayout title="游戏网络诊断分析器：导入 Ping 样本，查看尖峰与丢包" description="在浏览器本地解析连续 Ping 测试数据，计算平均与最大 RTT、P95、丢包与连续超时，支持 CSV 导出和报告复制。不上传测试内容。">
+  <div class="simple-page analyzer-page">
+    <p class="eyebrow">本地分析工具</p>
+    <h1>游戏网络诊断分析器</h1>
+    <p class="lead">把连续测量数据粘贴进来，先看波动与超时分布，再决定下一步测哪里。不需要账号，也不会自动上传样本。</p>
+    <div class="notice"><strong>先明确限制：</strong>此工具分析的是你提供的样本，不会直接连接游戏服务器测速；ICMP 超时不等于游戏业务流量丢包，不能凭单次测试定位运营商或服务器责任。</div>
+    <section class="analyzer-howto" aria-labelledby="an-howto-title">
+      <h2 id="an-howto-title">第一次使用？按这三步操作</h2>
+      <ol>
+        <li><strong>选目标：</strong>先测试默认网关，再测试允许 ICMP 的外部目标。不同目标不能直接当作同一次测试。</li>
+        <li><strong>收集连续数据：</strong>Windows 在终端执行 <code>ipconfig</code> 查找默认网关，再执行 <code>ping -n 100 网关地址</code>；macOS / Linux 可使用 <code>ping -c 100 网关地址</code>。把“网关地址”替换为实际地址。</li>
+        <li><strong>保存与复测：</strong>粘贴逐次结果或导入本地日志，注明接入方式及测试时段。看完结果后，按页面下方的建议进行对照。</li>
+      </ol>
+      <p class="privacy-inline">提示：Linux/macOS 的普通 Ping 日志可能不逐条显示未收到回应的探针；若汇总统计与可解析样本不一致，工具会拒绝推断其位置。不要把真实公网 IP、账户或其他私人信息分享给他人。</p>
+    </section>
+    <div class="analyzer-tool" data-network-analyzer>
+      <form id="analyzer-form" novalidate>
+        <fieldset><legend>01 · 输入数据</legend>
+          <div class="form-grid">
+            <label>测试目标类别<select id="an-target"><option value="家庭网关">家庭网关</option><option value="外部测试目标">外部测试目标</option><option value="游戏区域相关目标">游戏区域相关目标</option></select></label>
+            <label>接入方式<select id="an-connection"><option value="Wi-Fi">Wi-Fi</option><option value="有线">有线</option><option value="其他">其他</option></select></label>
+            <label>自填采样间隔（秒，供记录；日志实际间隔未经核实）<input id="an-interval" type="number" step="0.1" min="0.1" max="3600" value="1" /></label>
+            <label>测试日期或时段（可选）<input id="an-timestamp" maxlength="80" placeholder="例如：10月30日 20:00" /></label>
+            <label>测试目标地址或名称（可选）<input id="an-target-detail" maxlength="100" placeholder="例如：默认网关；不要输入私人地址" /></label>
+            <label>测试场景（可选）<input id="an-scenario" maxlength="100" placeholder="例如：晚间打游戏时；勿输入个人信息" /></label>
+          </div>
+          <label>导入本地 Ping 日志（TXT / LOG / 本工具导出的 CSV，最多 1 MB）<input id="an-file" type="file" accept=".txt,.log,.csv,text/plain,text/csv" /></label>
+          <label>每行一个测试样本（单位 ms；超时输入 timeout、超时或 *）
+            <textarea id="an-samples" rows="9" spellcheck="false" placeholder="21\n22\n23\n105\n22\ntimeout\ntimeout\n24" aria-describedby="an-help"></textarea>
+          </label>
+          <p id="an-help" class="privacy-inline">支持纯数字、带 ms 的数值、常见 Ping 输出中的 <code>time=23ms</code>、<code>时间=23ms</code>，以及超时标记。可以粘贴完整 Ping 命令输出，本地分析时会跳过已识别的日志标题和摘要；导出或分享前请检查是否含 IP、账户名等信息；例如“时间&lt;1ms”与“目标主机不可达”不作为精确 RTT 或普通超时统计；不能识别的其他行会提示修正，不会悄悄影响统计。</p>
+          <div class="form-actions"><button type="submit" class="button button-primary">分析样本</button><button type="button" class="button" id="an-demo">填入演示样本</button><button type="reset" class="button">清空</button></div>
+          <p id="an-message" role="status" aria-live="polite"></p>
+        </fieldset>
+      </form>
+      <section id="an-results" class="an-results" hidden aria-labelledby="an-results-title">
+        <h2 id="an-results-title">分析结果</h2>
+        <p class="privacy-inline" id="an-demo-note"></p>
+        <div class="an-stat-grid">
+          <div><strong id="an-total">—</strong><span>有效样本（含超时）</span></div>
+          <div><strong id="an-avg">—</strong><span>平均 RTT</span></div>
+          <div><strong id="an-p95">—</strong><span>P95 RTT</span></div>
+          <div><strong id="an-max">—</strong><span>最大 RTT</span></div>
+          <div><strong id="an-loss">—</strong><span>超时样本占比</span></div>
+          <div><strong id="an-burst">—</strong><span>最长连续超时</span></div>
+        </div>
+        <h3>RTT 样本走势（横轴为样本序号，不代表实际时间）</h3>
+        <div id="an-chart" class="an-chart" role="img" aria-label="RTT 样本曲线；空缺表示超时"></div>
+        <p id="an-observation"></p>
+        <h3>数据质量与解释边界</h3><p id="an-quality-label"></p><ul id="an-quality"></ul>
+        <h3>下一步如何验证</h3><ul id="an-next"></ul>
+        <nav class="an-followup" aria-label="针对测试现象的后续阅读"><h3>继续排查对应问题</h3><ul id="an-related"></ul></nav>
+        <div class="form-actions"><button type="button" class="button button-primary" id="an-copy">复制分析报告</button><button type="button" class="button" id="an-csv">导出样本 CSV</button><button type="button" class="button" onclick="window.print()">打印报告</button></div>
+      </section>
+    </div>
+    <section class="analyzer-compare" aria-labelledby="compare-title">
+      <h2 id="compare-title">比较两轮测试</h2>
+      <p>把相同目标、接近时段和相同采样方式下的两个数据集放在一起。比较结果仅描述样本差异，不能单独证明网络故障原因。</p>
+      <div class="form-grid">
+        <label>测试 A：逐行 RTT / timeout<textarea id="an-compare-a" rows="7" spellcheck="false" placeholder="21&#10;22&#10;23&#10;timeout"></textarea></label>
+        <label>测试 B：逐行 RTT / timeout<textarea id="an-compare-b" rows="7" spellcheck="false" placeholder="23&#10;88&#10;24&#10;25"></textarea></label>
+      </div>
+      <button class="button button-primary" type="button" id="an-compare-run">对比样本</button>
+      <p role="status" aria-live="polite" id="an-compare-message"></p>
+      <div id="an-compare-result" hidden>
+        <table class="metric-table"><thead><tr><th>指标</th><th>测试 A</th><th>测试 B</th></tr></thead><tbody id="an-compare-body"></tbody></table>
+        <p class="privacy-inline">P95 使用收到响应的 RTT（nearest-rank），超时单独统计。两轮采样条件不同，不能直接据此判定 Wi-Fi 或运营商问题。</p>
+      </div>
+    </section>
+    <h2>测试方法与结果解释</h2>
+    <p>Windows 可通过 <code>ipconfig</code> 查看默认网关，再执行 <code>ping -n 100 &lt;网关地址&gt;</code>。不同设备和系统的命令可能有所区别。请分别测试家庭网关和已知允许 Ping 的外部目标，并记录测试时间；不要把不响应 ICMP 的目标当作丢包证据。</p>
+    <p>本工具的 P95 是<strong>收到响应的 RTT 样本</strong>的第 95 百分位数（nearest-rank 方法）；超时另行统计，不会被换算成一个臆造的 RTT。平均值、最大值和 P95 不应拿来互相替代，也不存在适用于所有游戏的统一阈值。</p>
+    <p>遇到高峰、连续超时或低 Ping 仍卡？继续阅读 <a href={pathWithBase('/diagnose/game-lag-diagnostic-tree/')}>完整诊断树</a>、<a href={pathWithBase('/diagnose/low-ping-but-lag/')}>低 Ping 仍卡</a>，或使用 <a href={pathWithBase('/tools/network-test-record/')}>记录模板</a>比较 Wi-Fi 与有线结果。</p>
+  </div>
+  <script>
+    import { readDataset, summarize, assessDataset, comparisonNotes, troubleshootingSteps } from '../../lib/ping-analysis.mjs';
+    const root = document.querySelector('[data-network-analyzer]');
+    if (root) {
+      const el = (id: string) => document.getElementById(id)!;
+      const field = (id: string) => document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+      type Sample = number | null;
+      let samples: Sample[] = [];
+      let report = '';
+      let demoMode = false;
+      let fileReadVersion = 0;
+      const invalidate = () => { samples=[]; report=''; el('an-results').hidden=true; };
+      const invalidateComparison = () => { el('an-compare-result').hidden=true; el('an-compare-message').textContent='数据已修改，请重新运行对比。'; };
+      for (const id of ['an-target','an-connection','an-interval','an-scenario','an-timestamp','an-target-detail']) field(id).addEventListener('input',invalidate);
+      for (const id of ['an-compare-a','an-compare-b']) field(id).addEventListener('input',invalidateComparison);
+      const demo = ['21','23','24','105','25','22','timeout','timeout','27','23','21','94','22','24','23','22','21','25','24','23'].join('\n');
+      const fmt = (n: number) => Number.isFinite(n) ? n.toFixed(1) : '—';
+      const chart = (data: Sample[]) => {
+        const holder = el('an-chart'); holder.replaceChildren();
+        const width = 680, height = 175, pad = 24;
+        const values = data.filter((v): v is number => v !== null);
+        const cap = Math.max(1, ...values);
+        const uri = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(uri,'svg');
+        svg.setAttribute('viewBox',`0 0 ${width} ${height}`); svg.setAttribute('aria-hidden','true');
+        const paths: string[] = []; let segment: string[] = [];
+        data.forEach((v, i) => {
+          if (v === null) { if (segment.length) {paths.push(segment.join(' ')); segment=[];} return; }
+          const x = pad + (data.length === 1 ? 0 : i*(width-2*pad)/(data.length-1));
+          const y = height-pad-v/cap*(height-2*pad);
+          segment.push(`${segment.length ? 'L' : 'M'} ${x.toFixed(1)} ${y.toFixed(1)}`);
+        }); if(segment.length) paths.push(segment.join(' '));
+        for(const d of paths){const p=document.createElementNS(uri,'path'); p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke','#247a70');p.setAttribute('stroke-width','2.8');svg.append(p);}
+        data.forEach((v,i)=>{if(v!==null)return;const x=pad+(data.length===1?0:i*(width-2*pad)/(data.length-1));const mark=document.createElementNS(uri,'line');mark.setAttribute('x1',String(x));mark.setAttribute('x2',String(x));mark.setAttribute('y1',String(height-pad-8));mark.setAttribute('y2',String(height-pad+8));mark.setAttribute('stroke','#b14c34');mark.setAttribute('stroke-width','3');svg.append(mark);});
+        holder.append(svg);
+        holder.setAttribute('aria-label',`${data.length} 个样本，超时以底部短线表示。收到响应的最大 RTT ${fmt(cap)} 毫秒。`);
+      };
+      el('an-file').addEventListener('change', async () => {
+        const version = ++fileReadVersion;
+        invalidate();
+        el('an-message').textContent='正在读取所选文件；旧报告已清除。';
+        const input=field('an-file') as HTMLInputElement;
+        const file=input.files?.[0];
+        if (!file) { el('an-message').textContent='未选择文件；请重新输入并分析。'; return; }
+        if (file.size>1024*1024) { el('an-message').textContent='文件超过 1 MB，请先裁剪日志。';input.value='';return; }
+        try {const contents=await file.text();if(version!==fileReadVersion)return;field('an-samples').value=contents;demoMode=false;invalidate();el('an-message').textContent=`已读取 ${file.name}，文件只在本地浏览器处理；请检查样本并点击分析。`;}
+        catch {if(version===fileReadVersion)el('an-message').textContent='文件无法读取，请复制样本粘贴。';}
+      });
+      el('an-compare-run').addEventListener('click',()=>{
+        const a=readDataset(field('an-compare-a').value),b=readDataset(field('an-compare-b').value);
+        const notice=el('an-compare-message');
+        el('an-compare-result').hidden=true;
+        if ([a,b].some(x=>x.lineCount>5000||x.samples.length<3||x.invalid>0||x.summaryMismatch)) {notice.textContent=`两组都需至少 3 个有效样本、最多 5000 条待解析数据行，且不能有无法识别行。A：${a.summaryMismatch||a.errors.join("；")||"无错误"}；B：${b.summaryMismatch||b.errors.join("；")||"无错误"}。`;return;}
+        const x=summarize(a.samples),y=summarize(b.samples);
+        const tbody=el('an-compare-body');tbody.replaceChildren();
+        const rows:[string,string,string][]=[['样本数',String(x.count),String(y.count)],['平均 RTT',Number.isFinite(x.avg)?fmt(x.avg)+' ms':'无响应',Number.isFinite(y.avg)?fmt(y.avg)+' ms':'无响应'],['P95 RTT',Number.isFinite(x.p95)?fmt(x.p95)+' ms':'无响应',Number.isFinite(y.p95)?fmt(y.p95)+' ms':'无响应'],['超时占比',fmt(x.loss)+'%',fmt(y.loss)+'%'],['最长连续超时',x.maxRun+' 个',y.maxRun+' 个']];
+        rows.forEach(row=>{const tr=document.createElement('tr');row.forEach(value=>{const td=document.createElement('td');td.textContent=value;tr.append(td);});tbody.append(tr);});
+        el('an-compare-result').hidden=false;
+        notice.textContent=['比较完成。请检查两次采样目标、时间和间隔是否具有可比性。',...comparisonNotes(a.samples,b.samples)].join(' ');
+      });
+      el('an-demo').addEventListener('click' ,()=>{++fileReadVersion;field('an-samples').value=demo;invalidate();demoMode=true;el('an-message').textContent='已填写明确标注的模拟数据，请点击“分析样本”。';});
+      field('an-samples').addEventListener('input',()=>{++fileReadVersion;demoMode=false;invalidate();el('an-message').textContent='输入已修改，请重新分析。';});
+      root.querySelector('form')!.addEventListener('reset',()=>{++fileReadVersion;invalidate();demoMode=false;el('an-message').textContent='已清空。';});
+      root.querySelector('form')!.addEventListener('submit',(event)=>{
+        event.preventDefault();
+        invalidate();
+        const dataset = readDataset(field('an-samples').value); const invalid = dataset.invalid;
+        const intervalInput=field('an-interval').value.trim();
+        const interval = intervalInput ? Number(intervalInput) : NaN;
+        if (dataset.lineCount > 5000 || dataset.samples.length < 3 || invalid>0 || dataset.summaryMismatch || !(interval>=0.1&&interval<=3600)) {el('an-message').textContent=`至少需要 3 条有效样本、最多 5000 条待解析数据行，采样间隔 0.1—3600 秒；无法识别 ${invalid} 行。${dataset.errors.join("；")} ${dataset.summaryMismatch} 请仅保留逐次 Ping 响应或超时样本。`;el('an-results').hidden=true;return;}
+        samples=dataset.samples;
+        const received=samples.filter((v): v is number=>v!==null).sort((a,b)=>a-b);
+        const missing=samples.length-received.length;
+        let streak=0,longest=0;
+        samples.forEach(v=>{streak=v===null?streak+1:0;longest=Math.max(longest,streak);});
+        const avg=received.length?received.reduce((a,b)=>a+b,0)/received.length:NaN;
+        const p95=received.length?received[Math.ceil(received.length*.95)-1]:NaN;
+        const max=received.length?received[received.length-1]:NaN;
+        const loss=missing/samples.length*100;
+        el('an-total').textContent=String(samples.length);
+        el('an-avg').textContent=received.length?`${fmt(avg)} ms`:'无响应';
+        el('an-p95').textContent=received.length?`${fmt(p95)} ms`:'无响应';
+        el('an-max').textContent=received.length?`${fmt(max)} ms`:'无响应';
+        el('an-loss').textContent=`${fmt(loss)}%`;
+        el('an-burst').textContent=`${longest} 个`;
+        chart(samples);
+        const observations=[];
+        if(missing) observations.push(`存在 ${missing} 个未收到响应的样本；最长连续 ${longest} 个。日志的实际发送间隔和超时处理过程未获核实，不能由此推算真实断线时长。`);
+        if(received.length && max>avg*2 && max-avg>=20) observations.push('收到响应的样本中，最大 RTT 明显高于平均 RTT；可查看峰值是否与游戏症状同期发生。');
+        if(!missing) observations.push('样本中没有标记超时，但不能据此证明游戏流量没有丢包。');
+        if(!received.length) observations.push('所有输入样本均标记超时。先核实目标是否允许 ICMP，不能直接判断链路故障。');
+        el('an-observation').textContent=observations.join(' ');
+        const quality=assessDataset(samples,{target:field('an-target-detail').value.trim(),timestamp:field('an-timestamp').value.trim(),intervalKnown:false});
+        el('an-quality-label').textContent=quality.status; const qualityList=el('an-quality');qualityList.replaceChildren();quality.issues.forEach(note=>{const li=document.createElement('li');li.textContent=note;qualityList.append(li);});
+        const next=el('an-next');next.replaceChildren();
+        const steps=troubleshootingSteps(samples,{connection:field('an-connection').value,target:field('an-target').value});
+        steps.forEach(s=>{const li=document.createElement('li');li.textContent=s;next.append(li);});
+        // Only link to existing, distinct diagnostic guides; these links are suggestions, not diagnoses.
+        const related=el('an-related');related.replaceChildren();
+        const guides=[['/diagnose/game-lag-diagnostic-tree/','按顺序完成游戏卡顿排查']];
+        if(field('an-connection').value==='Wi-Fi') guides.push(['/diagnose/wifi-gaming-lag/','对照 Wi-Fi 与有线测试']);
+        if(missing>0) guides.push(['/metrics/burst-packet-loss/','理解连续超时与突发丢包的区别']);
+        if(received.length && max-avg>=50) guides.push(['/diagnose/ping-spikes-while-gaming/','排查游戏时延迟突然升高']);
+        if(!missing && received.length && max-avg<50) guides.push(['/diagnose/low-ping-but-lag/','网络样本平稳但游戏仍卡的排查']);
+        guides.forEach(([href,label])=>{const li=document.createElement('li');const a=document.createElement('a');a.href=href;a.textContent=label;li.append(a);related.append(li);});
+        const name=field('an-scenario').value.trim();
+        report=[`游戏网络测试分析${demoMode?'（模拟数据）':''}`,`场景：${name||'未填写'}`,`目标类别：${field('an-target').value}`,`目标描述：${field('an-target-detail').value.trim()||'未记录'}`,`测试时段：${field('an-timestamp').value.trim()||'未记录'}`,`接入：${field('an-connection').value}`,`采样间隔（用户填写，未验证日志实际间隔）：${interval} 秒`,`有效样本：${samples.length}（收到响应 ${received.length}，超时 ${missing}）`,`平均 RTT：${received.length?fmt(avg)+' ms':'无响应'}`,`P95 RTT：${received.length?fmt(p95)+' ms':'无响应'}`,`最大 RTT：${received.length?fmt(max)+' ms':'无响应'}`,`超时占比：${fmt(loss)}%`,`最长连续超时：${longest} 个`,`观察：${observations.join(' ')}`,`数据质量：${quality.status}；${quality.issues.join('；')}`,`建议步骤：${steps.join('；')}`, '限制：仅解释输入样本；目标 ICMP 策略、测试时间及帧时间等可能影响结论。'].join('\n');
+        el('an-demo-note').textContent=demoMode?'当前为教学演示数据，不是真实网络测试。':'以下结果仅基于用户输入的数据；没有进行真实网络测试。';
+        el('an-message').textContent=`解析 ${samples.length} 条样本；跳过 ${dataset.ignored} 行已识别的日志摘要。`;
+        el('an-results').hidden=false;
+      });
+      el('an-copy').addEventListener('click',async()=>{if(!report)return;try{await navigator.clipboard.writeText(report);el('an-message').textContent='已复制报告。';}catch{el('an-message').textContent='浏览器未允许复制，请使用打印报告。';}});
+      el('an-csv').addEventListener('click',()=>{
+        if (!samples.length) return;
+        const lines=['index,rtt_ms,status',...samples.map((s,i)=>`${i+1},${s===null?'':s},${s===null?'timeout':'received'}`)];
+        const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+        const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='network-samples.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+      });
+    }
+  </script>
+</BaseLayout>

@@ -64,6 +64,7 @@ const schema = [
         '@type': 'ListItem',
         position: 2,
         name: sectionLabel,
+        item: new URL(pathWithBase(`/${article.section}/`), Astro.site || Astro.url.origin).href,
       },
       {
         '@type': 'ListItem',
@@ -80,6 +81,7 @@ const schema = [
   title={article.title}
   description={article.description}
   schema={schema}
+  socialType="article"
 >
   <div class="article-shell">
     <Breadcrumbs
@@ -90,6 +92,7 @@ const schema = [
         },
         {
           label: sectionLabel,
+          href: `/${article.section}/`,
         },
         {
           label: article.title,
@@ -110,7 +113,6 @@ const schema = [
           )
         }
         <span>{article.readTime}</span>
-        <span>编辑方法已公开</span>
       </div>
     </header>
 
@@ -118,19 +120,12 @@ const schema = [
       <article class="article-body">
         <DirectAnswer text={article.answer} />
 
-        <section
-          class="key-points"
-          aria-labelledby="key-points-heading"
-        >
-          <h2 id="key-points-heading">先记住三件事</h2>
-          <ol>
-            {
-              article.takeaways.map((takeaway) => (
-                <li>{takeaway}</li>
-              ))
-            }
-          </ol>
-        </section>
+        {article.takeaways && article.takeaways.length > 0 && (
+          <section class="key-points" aria-labelledby="key-points-heading">
+            <h2 id="key-points-heading">关键区别</h2>
+            <ol>{article.takeaways.map((takeaway) => <li>{takeaway}</li>)}</ol>
+          </section>
+        )}
 
         {
           article.sections.map((section) => (
@@ -160,9 +155,7 @@ const schema = [
 
         <section class="source-section" data-reveal>
           <h2>依据与延伸阅读</h2>
-          <p>
-            以下资料用于核对术语和工具行为。本文中的诊断顺序是编辑组基于这些定义整理的实践框架。
-          </p>
+          <p>这些资料用于理解相关术语和工具的适用范围；实际网络结果还取决于测量目标与环境。</p>
 
           <ul class="source-list">
             {
@@ -193,14 +186,14 @@ const schema = [
           <p class="aside-label">下一步</p>
           <h2>把判断变成一组对照</h2>
           <p>
-            使用记录模板保存时间、目标、连接方式和异常模式。
+            先用诊断分析器查看连续样本的尖峰和超时，再保存对照条件。
           </p>
 
           <a
             class="text-link"
-            href={pathWithBase('/tools/network-test-record/')}
+            href={pathWithBase('/tools/network-analyzer/')}
           >
-            打开测试记录模板
+            打开网络诊断分析器
             <span aria-hidden="true">→</span>
           </a>
 

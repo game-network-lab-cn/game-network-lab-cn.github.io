@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { pathWithBase } from '../../data/site';
+---
+<BaseLayout title="游戏卡顿怎么排查" description="按症状选择适合的诊断路径，区分掉帧、网络波动与游戏服务端异常。">
+  <div class="simple-page">
+    <p class="eyebrow">游戏卡顿怎么排查</p>
+    <h1>游戏卡顿怎么排查</h1>
+    <p class="lead">先辨别卡顿类型；不要只用一个 Ping 数字下结论。</p>
+    <h2>先确定卡顿发生在哪一层</h2>
+    <table class="metric-table"><thead><tr><th>观察到的症状</th><th>优先检查</th><th>下一步</th></tr></thead><tbody>
+      <tr><td>画面卡住，但角色没有回弹</td><td>游戏帧时间、CPU/GPU 占用</td><td>同时记录帧时间和网络数据，避免把掉帧当成丢包</td></tr>
+      <tr><td>角色回弹、动作突然跳跃</td><td>短时 RTT 尖峰、连续丢包</td><td>对照家庭网关与外部目标的同期测试</td></tr>
+      <tr><td>只在 Wi-Fi 出现异常</td><td>同一设备的有线对照</td><td><a href={pathWithBase("/diagnose/wifi-gaming-lag/")}>按条件对照排查</a></td></tr>
+      <tr><td>Ping 偶尔突然升高</td><td>连续 RTT、网关与外部目标、后台上传</td><td><a href={pathWithBase("/diagnose/ping-spikes-while-gaming/")}>捕捉尖峰并对照</a></td></tr>
+      <tr><td>Ping 数字很低仍然卡</td><td>采样方式、帧时间、游戏服务状态</td><td>阅读低 Ping 专题，逐项排除</td></tr>
+    </tbody></table>
+    <p>表中症状只能提示调查方向，不能单凭某一种体感确定责任方。测试目标拒绝 ICMP 时，也不应把超时直接视为游戏流量故障。</p>
+    <h2>选择你遇到的问题</h2>
+    <ul>
+      <li><a href={pathWithBase("/diagnose/game-lag-diagnostic-tree/")}>按步骤进行完整排查</a></li>
+      <li><a href={pathWithBase("/diagnose/low-ping-but-lag/")}>Ping 不高但仍然卡顿</a></li>
+      <li><a href={pathWithBase("/diagnose/wifi-gaming-lag/")}>只有 Wi-Fi 卡，有线正常</a></li>
+      <li><a href={pathWithBase("/diagnose/ping-spikes-while-gaming/")}>玩游戏时 Ping 突然升高</a></li>
+    </ul>
+    <p>已有连续 RTT 样本？先用<a href={pathWithBase('/tools/network-analyzer/')}>网络诊断分析器</a>查看波动、P95 与连续超时；对照环境可用<a href={pathWithBase('/tools/network-test-record/')}>测试记录模板</a>保存，再回到对应指南。</p>
+  </div>
+</BaseLayout>

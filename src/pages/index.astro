@@ -13,15 +13,15 @@ const featured = [
 const symptoms = [
   {
     label: '角色瞬移或回弹',
-    title: '先看连续丢包与短时尖峰',
-    body: '记录卡顿发生时刻，再把它与连续 RTT、最长连续丢包对齐。平均值正常也不能排除短时异常。',
-    href: '/metrics/burst-packet-loss/',
+    title: '先区分网络异常与本机帧时间问题',
+    body: '先记录卡顿发生时刻，并对照游戏帧时间、连续 RTT 和超时样本。单凭瞬移现象不能认定存在丢包。',
+    href: '/diagnose/game-lag-diagnostic-tree/',
   },
   {
     label: 'Ping 突然升高',
     title: '先判断尖峰从家庭网络还是外部路径开始',
     body: '先测家庭网关，再做有线与 Wi-Fi、空闲与负载的单变量对照，近端稳定后才继续看外部路径。',
-    href: '/diagnose/game-lag-diagnostic-tree/',
+    href: '/diagnose/ping-spikes-while-gaming/',
   },
   {
     label: '低 Ping 仍然卡',
@@ -39,7 +39,7 @@ const symptoms = [
     label: '只在 Wi-Fi 卡',
     title: '用有线对照隔离无线接入问题',
     body: '保持设备、服务器和时段不变，只把 Wi-Fi 换成有线。如果异常明显消失，再检查信号、干扰、频段与网卡。',
-    href: '/diagnose/game-lag-diagnostic-tree/',
+    href: '/diagnose/wifi-gaming-lag/',
   },
 ];
 ---
@@ -61,8 +61,8 @@ const symptoms = [
           <a class="button button-primary" href="#symptoms">
             按症状开始诊断 <span aria-hidden="true">→</span>
           </a>
-          <a class="button button-secondary" href={pathWithBase('/metrics/game-network-quality/')}>
-            认识四个指标
+          <a class="button button-secondary" href={pathWithBase('/tools/network-analyzer/')}>
+            分析测试数据
           </a>
         </div>
 
@@ -89,13 +89,13 @@ const symptoms = [
       </p>
 
       <div class="diagnostic-workbench" data-diagnostic data-reveal>
-        <div class="symptom-list" role="tablist" aria-label="选择网络症状">
+        <div class="symptom-list" role="group" aria-label="选择网络症状">
           {
             symptoms.map((item, index) => (
               <button
                 class="symptom-button"
-                role="tab"
-                aria-selected={index === 0 ? 'true' : 'false'}
+                type="button"
+                aria-pressed={index === 0 ? 'true' : 'false'}
                 data-index={index}
               >
                 <span>{item.label}</span>
@@ -105,11 +105,11 @@ const symptoms = [
           }
         </div>
 
-        <div class="symptom-panel" role="tabpanel" aria-live="polite">
-          <span class="panel-index">DIAGNOSIS 01</span>
-          <h3>{symptoms[0].title}</h3>
-          <p>{symptoms[0].body}</p>
-          <a class="text-link" href={pathWithBase(symptoms[0].href)}>
+        <div class="symptom-panel" aria-live="polite" aria-atomic="true">
+          <span class="panel-index" data-panel-index>DIAGNOSIS 01</span>
+          <h3 data-panel-title>{symptoms[0].title}</h3>
+          <p data-panel-body>{symptoms[0].body}</p>
+          <a class="text-link" data-panel-link href={pathWithBase(symptoms[0].href)}>
             查看这条诊断路径 <span aria-hidden="true">→</span>
           </a>
         </div>
@@ -185,7 +185,7 @@ const symptoms = [
             <td>异常可能从哪里开始</td>
             <td>把中间节点不响应当作业务丢包</td>
             <td>
-              <a href={pathWithBase('/diagnose/game-lag-diagnostic-tree/')}>诊断树</a>
+              <a href={pathWithBase('/diagnose/game-lag-diagnostic-tree/')}>诊断树</a> · <a href={pathWithBase('/diagnose/wifi-gaming-lag/')}>Wi-Fi 卡顿排查</a> · <a href={pathWithBase('/diagnose/ping-spikes-while-gaming/')}>Ping 突然升高</a>
             </td>
           </tr>
         </tbody>
@@ -195,7 +195,7 @@ const symptoms = [
 
   <section class="section" style="padding-top: 0">
     <div class="section-inner">
-      <p class="section-kicker">首发指南</p>
+      <p class="section-kicker">常见问题</p>
       <h2 class="section-heading">从最常见的误判开始。</h2>
 
       <div class="guide-list" data-reveal>
@@ -270,8 +270,11 @@ const symptoms = [
     const root = document.querySelector('[data-diagnostic]');
 
     if (root) {
-      const buttons = root.querySelectorAll('[role="tab"]');
-      const panel = root.querySelector('[role="tabpanel"]');
+      const buttons = root.querySelectorAll('.symptom-button');
+      const indexNode = root.querySelector('[data-panel-index]');
+      const titleNode = root.querySelector('[data-panel-title]');
+      const bodyNode = root.querySelector('[data-panel-body]');
+      const linkNode = root.querySelector('[data-panel-link]');
 
       buttons.forEach((button) =>
         button.addEventListener('click', () => {
@@ -279,12 +282,13 @@ const symptoms = [
           const item = symptoms[index];
 
           buttons.forEach((candidate) =>
-            candidate.setAttribute('aria-selected', String(candidate === button)),
+            candidate.setAttribute('aria-pressed', String(candidate === button)),
           );
-
           const normalizedBase = base.replace(/\/$/, '');
-
-          panel.innerHTML = `<span class="panel-index">DIAGNOSIS ${String(index + 1).padStart(2, '0')}</span><h3>${item.title}</h3><p>${item.body}</p><a class="text-link" href="${normalizedBase}${item.href}">查看这条诊断路径 <span aria-hidden="true">→</span></a>`;
+          indexNode.textContent = `DIAGNOSIS ${String(index + 1).padStart(2, '0')}`;
+          titleNode.textContent = item.title;
+          bodyNode.textContent = item.body;
+          linkNode.href = `${normalizedBase}${item.href}`;
         }),
       );
     }

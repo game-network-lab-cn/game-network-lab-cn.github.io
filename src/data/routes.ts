@@ -10,6 +10,10 @@ const staticRoutes: IndexedRoute[] = [
     path: '/',
     lastModified: '2026-08-21',
   },
+  { path: '/metrics/', lastModified: '2026-10-30' },
+  { path: '/diagnose/', lastModified: '2026-10-30' },
+  { path: '/tools/network-analyzer/', lastModified: '2026-10-30' },
+  { path: '/cases/', lastModified: '2026-10-30' },
   {
     path: '/about/',
     lastModified: '2026-08-21',

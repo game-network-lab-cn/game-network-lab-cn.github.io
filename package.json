@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "astro dev",
     "validate": "node scripts/validate-project.mjs",
-    "build": "npm run validate && astro check && astro build",
+    "test": "node --test tests/*.test.mjs",
+    "build": "npm run validate && astro check && astro build && npm run audit:dist",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "verify": "npm run test && npm run validate && npm run build",
+    "audit:dist": "node scripts/audit-dist.mjs"
   },
   "dependencies": {
     "astro": "^7.2.0"

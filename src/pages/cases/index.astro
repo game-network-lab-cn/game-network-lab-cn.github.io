@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {pathWithBase} from '../../data/site';
+---
+<BaseLayout title="游戏网络诊断案例：如何解读测试结果" description="用明确标注的模拟数据演示平均延迟与尖峰、连续超时、Wi-Fi 对照如何分析；真实测试案例将在有可靠测量记录后发布。">
+  <div class="simple-page">
+    <p class="eyebrow">可复核的示例</p>
+    <h1>游戏网络诊断案例</h1>
+    <p class="lead">以下全部是<strong>教学模拟数据</strong>，用于解释如何判断，不代表真实玩家或真实网络测试。</p>
+    <h2>案例 1：平均延迟接近，但尖峰分布不同</h2>
+    <p>假设在同一个可响应 ICMP 的目标、同样的采样方式下观察到两组数据：</p>
+    <table class="metric-table"><thead><tr><th>模拟组别</th><th>逐次 RTT（ms）</th><th>平均值</th><th>最大值</th></tr></thead><tbody>
+      <tr><td>A：相对平稳</td><td>25、26、25、24、25</td><td>25.0 ms</td><td>26 ms</td></tr>
+      <tr><td>B：出现尖峰</td><td>15、15、15、15、65</td><td>25.0 ms</td><td>65 ms</td></tr>
+    </tbody></table>
+    <p>这两组平均 RTT 一样，却呈现不同的短时分布。能够得出的结论是“B 组在这五个样本中出现了更高的单次响应时间”；不能直接得出“B 组游戏一定更卡”，因为还不知道游戏流量、采样密度及具体时刻。</p>
+    <h2>案例 2：两个超时样本代表什么</h2>
+    <p>假设按每秒一次采样，得到 <code>21, 22, timeout, timeout, 25, 24</code>。其中 6 个样本有 2 个未响应，最长连续超时为 2 个采样点。若检测间隔为 1 秒，它们覆盖约 2 秒的采样窗口，但<strong>不能推断实际链路恰好中断了 2 秒</strong>；目标的 ICMP 限制也可能影响结果。</p>
+    <h2>案例 3：如何做 Wi-Fi 与有线对照</h2>
+    <p>先确定同一台电脑、相同的测试目标和相近的测试时段。分别采集足够长的连续样本，记录是否有人上传大文件。若仅 Wi-Fi 下持续复现尖峰，这支持优先检查无线干扰、信号与终端网卡；但仍需重复测试，避免把时段变化误当作连接方式造成的差异。</p>
+    <p>你可以把自有数据放进<a href={pathWithBase('/tools/network-analyzer/')}>网络诊断分析器</a>查看 P95、超时分布和时间序列，再从<a href={pathWithBase('/diagnose/')}>诊断入口</a>选择后续步骤。</p>
+    <div class="notice">本站尚未发布带有完整原始样本与测试条件的真实案例。模拟示例的作用是教学，不能作为特定运营商、路由器或游戏服务质量的实测证据。</div>
+  </div>
+</BaseLayout>

@@ -22,18 +22,22 @@ export function pathWithBase(path = '/') {
 export const navItems = [
   {
     label: '认识指标',
-    href: '/metrics/game-network-quality/',
+    href: '/metrics/',
   },
   {
     label: '开始诊断',
-    href: '/diagnose/game-lag-diagnostic-tree/',
+    href: '/diagnose/',
+  },
+  {
+    label: '诊断案例',
+    href: '/cases/',
   },
   {
     label: '方法与证据',
     href: '/methodology/',
   },
   {
-    label: '记录模板',
-    href: '/tools/network-test-record/',
+    label: '诊断分析器',
+    href: '/tools/network-analyzer/',
   },
 ];

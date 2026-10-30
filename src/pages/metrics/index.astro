@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { pathWithBase } from '../../data/site';
+---
+<BaseLayout title="游戏网络指标怎么读" description="理解游戏网络里的 RTT、延迟波动和丢包；根据问题找到具体解释。">
+  <div class="simple-page">
+    <p class="eyebrow">游戏网络指标怎么读</p>
+    <h1>游戏网络指标怎么读</h1>
+    <p class="lead">先看清数字说明什么，再决定如何测量。</p>
+    <h2>看指标时先问三个问题</h2>
+    <table class="metric-table"><thead><tr><th>指标</th><th>适合观察</th><th>不能单独证明</th></tr></thead><tbody>
+      <tr><td>往返时延 RTT</td><td>测试包往返所需时间及尖峰</td><td>游戏服务器处理是否正常</td></tr>
+      <tr><td>丢包</td><td>当前测试方法下的请求响应异常</td><td>游戏流量也必然按相同比例丢失</td></tr>
+      <tr><td>延迟波动</td><td>连续测量值是否稳定</td><td>不同工具的 jitter 数字可直接比较</td></tr>
+    </tbody></table>
+    <p>例如两次测试平均 RTT 都是 25 毫秒，但一次始终在 22–28 毫秒间，另一次出现 110 毫秒尖峰，平均值相同不代表短时表现相同。这里的数值仅用于解释方法，并非实测结果。</p>
+    <h2>选择你遇到的问题</h2>
+    <ul>
+      <li><a href={pathWithBase("/metrics/game-network-quality/")}>先判断总体网络质量</a></li>
+      <li><a href={pathWithBase("/metrics/ping-vs-rtt/")}>分清 Ping 工具与 RTT</a></li>
+      <li><a href={pathWithBase("/metrics/packet-delay-variation/")}>理解短时延迟尖峰</a></li>
+      <li><a href={pathWithBase("/metrics/burst-packet-loss/")}>识别连续丢包</a></li>
+    </ul>
+    <p>已经测过几次？可用<a href={pathWithBase('/tools/network-test-record/')}>测试记录模板</a>整理正常与异常时段的结果，再回到对应指南。</p>
+  </div>
+</BaseLayout>
