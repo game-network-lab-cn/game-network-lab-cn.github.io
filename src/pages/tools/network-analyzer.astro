@@ -172,7 +172,7 @@ import { pathWithBase } from '../../data/site';
         el('an-quality-label').textContent=quality.status; const qualityList=el('an-quality');qualityList.replaceChildren();quality.issues.forEach(note=>{const li=document.createElement('li');li.textContent=note;qualityList.append(li);});
         const next=el('an-next');next.replaceChildren();
         const steps=troubleshootingSteps(samples,{connection:field('an-connection').value,target:field('an-target').value});
-        steps.forEach(s=>{const li=document.createElement('li');li.textContent=s;next.append(li);});
+        steps.forEach((s: string)=>{const li=document.createElement('li');li.textContent=s;next.append(li);});
         // Only link to existing, distinct diagnostic guides; these links are suggestions, not diagnoses.
         const related=el('an-related');related.replaceChildren();
         const guides=[['/diagnose/game-lag-diagnostic-tree/','按顺序完成游戏卡顿排查']];
