@@ -1,19 +1,19 @@
 ---
+interface Props { placement?: 'home' | 'diagnose'; }
+const { placement = 'diagnose' } = Astro.props;
 const referralUrl = new URL('https://youtujsq9.net/');
 
 referralUrl.searchParams.set('utm_source', 'low_latency_lab');
 referralUrl.searchParams.set('utm_medium', 'referral');
-referralUrl.searchParams.set('utm_campaign', 'article_banner');
+referralUrl.searchParams.set('utm_campaign', placement === 'home' ? 'home_banner' : 'diagnose_banner');
 ---
 
-<aside class="referral-banner" aria-labelledby="referral-banner-title">
+<aside class="referral-banner" aria-label="优途加速器广告" data-referral-placement={placement}>
   <div class="referral-copy">
-    <p class="referral-label">广告 · 优途官网</p>
-    <h2 id="referral-banner-title">
-      完成基础排查后，再判断是否需要网络加速服务。
-    </h2>
+    <p class="referral-label">广告 · 优途加速器</p>
+    <h2>游戏连接不稳定？了解一下优途加速器</h2>
     <p>
-      优途官网提供当前产品说明与官方入口。是否适合你的网络情况，应以实际测试和官网当前信息为准。
+      有些游戏连接问题可能与网络路径有关。先排查家里的网络，再看看加速服务是否适合你玩的游戏。
     </p>
   </div>
 
@@ -24,26 +24,94 @@ referralUrl.searchParams.set('utm_campaign', 'article_banner');
     rel="sponsored noopener noreferrer"
     data-referral-banner
   >
-    前往优途官网
+    查看优途加速器
     <span aria-hidden="true">→</span>
   </a>
 
   <p class="referral-disclosure">
-    广告服务不保证改善游戏延迟，请根据实际测试结果判断是否需要。
+    加速效果因游戏和网络环境而异，不能解决设备掉帧或 Wi-Fi 信号差等问题。
   </p>
 </aside>
 
 <script is:inline>
-  document.querySelectorAll('[data-referral-banner]').forEach((link) => {
-    link.addEventListener('click', () => {
-      if (typeof window.gtag === 'function') {
-        window.gtag('event', 'referral_banner_click', {
-          link_url: link.href,
-          link_text: link.textContent.trim(),
-          link_domain: 'youtujsq9.net',
-        });
+  // A view requires at least 50% of the banner on screen, with the tab visible,
+  // for one uninterrupted second. Analytics may still be blocked by the browser.
+  document.querySelectorAll('[data-referral-placement]').forEach((banner) => {
+    if (banner.dataset.referralInitialized === 'true') return;
+    banner.dataset.referralInitialized = 'true';
+    const details = {
+      ad_partner: 'youtu',
+      placement: banner.getAttribute('data-referral-placement') || 'unknown',
+      page_path: location.pathname,
+    };
+    const emit = (name) => {
+      if (typeof window.gtag !== 'function') return false;
+      window.gtag('event', name, details);
+      return true; // event queued, not evidence of GA4 receipt
+    };
+    const link = banner.querySelector('[data-referral-banner]');
+    if (link) link.addEventListener('click', () => emit('referral_banner_click'));
+    if (!('IntersectionObserver' in window)) return;
+
+    let timer = null;
+    let ratio = 0;
+    let viewQualified = false;
+    let viewSent = false;
+    let retryTimer = null;
+    const clearViewTimer = () => {
+      if (timer !== null) clearTimeout(timer);
+      timer = null;
+    };
+    const isVisible = () => document.visibilityState === 'visible' && ratio >= 0.5;
+    const trySend = () => {
+      if (!viewQualified || viewSent) return;
+      if (emit('referral_banner_view')) {
+        viewSent = true;
+        if (retryTimer !== null) clearInterval(retryTimer);
+        retryTimer = null;
       }
-    });
+    };
+    const startIfVisible = () => {
+      if (!isVisible() || viewQualified || timer !== null) return;
+      timer = setTimeout(() => {
+        timer = null;
+        if (!isVisible() || viewQualified) return;
+        viewQualified = true;
+        trySend();
+        // The analytics library may arrive after the visible impression.
+        // Retry briefly, without counting it twice.
+        if (!viewSent) {
+          let attempts = 0;
+          retryTimer = setInterval(() => {
+            attempts += 1;
+            trySend();
+            if (viewSent || attempts >= 10) {
+              clearInterval(retryTimer);
+              retryTimer = null;
+            }
+          }, 500);
+        }
+      }, 1000);
+    };
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries.find((entry) => entry.target === banner);
+      if (!entry) return;
+      ratio = entry.intersectionRatio;
+      if (!isVisible()) clearViewTimer();
+      else startIfVisible();
+    }, { threshold: [0, 0.5, 1] });
+    const onVisibilityChange = () => {
+      if (!isVisible()) clearViewTimer();
+      else startIfVisible();
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    observer.observe(banner);
+    window.addEventListener('pagehide', () => {
+      clearViewTimer();
+      if (retryTimer !== null) clearInterval(retryTimer);
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    }, { once: true });
   });
 </script>
 

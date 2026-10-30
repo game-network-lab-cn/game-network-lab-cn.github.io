@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ReferralBanner from '../components/ReferralBanner.astro';
 import { articles } from '../data/articles';
 import { pathWithBase } from '../data/site';
 
@@ -114,6 +115,12 @@ const symptoms = [
           </a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section class="section" aria-label="优途加速器推广">
+    <div class="section-inner">
+      <ReferralBanner placement="home" />
     </div>
   </section>
 

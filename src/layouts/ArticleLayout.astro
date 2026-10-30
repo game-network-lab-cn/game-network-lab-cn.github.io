@@ -153,6 +153,8 @@ const schema = [
           ))
         }
 
+        {article.section === 'diagnose' && <ReferralBanner placement="diagnose" />}
+
         <section class="source-section" data-reveal>
           <h2>依据与延伸阅读</h2>
           <p>这些资料用于理解相关术语和工具的适用范围；实际网络结果还取决于测量目标与环境。</p>
@@ -175,7 +177,6 @@ const schema = [
           </ul>
         </section>
 
-        <ReferralBanner />
       </article>
 
       <aside
