@@ -13,31 +13,31 @@ const featured = [
 const symptoms = [
   {
     label: '角色瞬移或回弹',
-    title: '先区分网络异常与本机帧时间问题',
+    title: '人物瞬移，不一定就是丢包',
     body: '先记录卡顿发生时刻，并对照游戏帧时间、连续 RTT 和超时样本。单凭瞬移现象不能认定存在丢包。',
     href: '/diagnose/game-lag-diagnostic-tree/',
   },
   {
     label: 'Ping 突然升高',
-    title: '先判断尖峰从家庭网络还是外部路径开始',
-    body: '先测家庭网关，再做有线与 Wi-Fi、空闲与负载的单变量对照，近端稳定后才继续看外部路径。',
+    title: 'Ping 突然变高，先查家里的网络',
+    body: '先看看家里的网络是否正常，再对比网线和 Wi-Fi。如果只有玩游戏时延迟升高，还可以检查后台上传和外部连接。',
     href: '/diagnose/ping-spikes-while-gaming/',
   },
   {
     label: '低 Ping 仍然卡',
-    title: '同时看帧时间、尖峰和丢包分布',
+    title: 'Ping 不高却卡，可能不只是网络问题',
     body: '游戏内的低数值可能经过平滑，也可能与本机性能问题并存。把网络曲线与帧时间放在同一时间线上。',
     href: '/diagnose/low-ping-but-lag/',
   },
   {
     label: '语音断续',
-    title: '检查稳定性，不只检查平均延迟',
+    title: '语音断断续续，看看网络有没有突然波动',
     body: '语音对连续到达更敏感。观察延迟波动、连续丢失和上行负载，尤其留意后台上传发生的时段。',
     href: '/metrics/packet-delay-variation/',
   },
   {
     label: '只在 Wi-Fi 卡',
-    title: '用有线对照隔离无线接入问题',
+    title: '只有 Wi-Fi 卡，先试试网线',
     body: '保持设备、服务器和时段不变，只把 Wi-Fi 换成有线。如果异常明显消失，再检查信号、干扰、频段与网卡。',
     href: '/diagnose/wifi-gaming-lag/',
   },
@@ -52,9 +52,9 @@ const symptoms = [
     <div class="hero-inner">
       <div class="hero-copy">
         <p class="hero-brand">低延迟实验室</p>
-        <h1>游戏网络问题，先测清楚再动设置。</h1>
+        <h1>游戏卡顿、延迟高、总掉线？先找到原因。</h1>
         <p class="hero-lead">
-          从 Ping、丢包和延迟波动出发，用单变量对照定位家庭网络、路径或服务器侧线索。
+          打游戏突然卡一下，或者 Ping 一直跳？按症状排查 Wi-Fi、家里网络和游戏服务器，看看问题可能出在哪。
         </p>
 
         <div class="hero-actions">
@@ -66,7 +66,7 @@ const symptoms = [
           </a>
         </div>
 
-        <p class="hero-proof">不设万能阈值 · 不凭单次截图定责 · 不收集你的测试数据</p>
+        <p class="hero-proof">不用注册账号 · 测试数据留在浏览器里</p>
       </div>
     </div>
   </section>
@@ -82,10 +82,10 @@ const symptoms = [
 
   <section class="section" id="symptoms">
     <div class="section-inner">
-      <p class="section-kicker">症状入口</p>
-      <h2 class="section-heading">你遇到的是哪一种卡？</h2>
+      <p class="section-kicker">常见卡顿情况</p>
+      <h2 class="section-heading">玩游戏时，你遇到了什么问题？</h2>
       <p class="section-intro">
-        先选择可观察的症状，再进入对应的测量。一次只改变一个条件，结果才有解释力。
+        选一个最接近的情况，看看可以先检查哪里。
       </p>
 
       <div class="diagnostic-workbench" data-diagnostic data-reveal>
@@ -106,11 +106,11 @@ const symptoms = [
         </div>
 
         <div class="symptom-panel" aria-live="polite" aria-atomic="true">
-          <span class="panel-index" data-panel-index>DIAGNOSIS 01</span>
+          <span class="panel-index" data-panel-index>问题 01</span>
           <h3 data-panel-title>{symptoms[0].title}</h3>
           <p data-panel-body>{symptoms[0].body}</p>
           <a class="text-link" data-panel-link href={pathWithBase(symptoms[0].href)}>
-            查看这条诊断路径 <span aria-hidden="true">→</span>
+            查看排查方法 <span aria-hidden="true">→</span>
           </a>
         </div>
       </div>
@@ -119,27 +119,27 @@ const symptoms = [
 
   <section class="section section-dark">
     <div class="section-inner">
-      <p class="section-kicker">诊断方法</p>
-      <h2 class="section-heading">从现象到证据，只走三步。</h2>
-      <p class="section-intro">测量的目的不是得到一个漂亮数字，而是排除错误方向。</p>
+      <p class="section-kicker">怎么排查</p>
+      <h2 class="section-heading">不知道哪里出了问题？从这三步开始。</h2>
+      <p class="section-intro">先看看卡顿什么时候出现，再比较不同网络下有没有变化。</p>
 
       <div class="workflow" data-reveal>
         <div class="workflow-step">
-          <span class="step-number">01 / REPRODUCE</span>
-          <h3>复现并记时</h3>
-          <p>记录准确时间、服务器区域、连接方式和可观察症状。</p>
+          <span class="step-number">01</span>
+          <h3>记下卡顿发生的时间</h3>
+          <p>记下当时玩的游戏、服务器、使用 Wi-Fi 还是网线，以及具体是延迟高、瞬移还是掉线。</p>
         </div>
 
         <div class="workflow-step">
-          <span class="step-number">02 / COMPARE</span>
-          <h3>只改一个变量</h3>
-          <p>用有线对 Wi-Fi、空闲对负载、正常时段对异常时段。</p>
+          <span class="step-number">02</span>
+          <h3>换一种连接方式试试</h3>
+          <p>先用网线和 Wi-Fi 分别试一次，再看看后台上传文件时会不会更卡。</p>
         </div>
 
         <div class="workflow-step">
-          <span class="step-number">03 / LOCATE</span>
-          <h3>从近到远定位</h3>
-          <p>家庭网关稳定后，再检查外部目标、路径和游戏服务线索。</p>
+          <span class="step-number">03</span>
+          <h3>再查外部网络</h3>
+          <p>如果家里的网络测试稳定，再检查外部连接和游戏服务器有没有异常。</p>
         </div>
       </div>
     </div>
@@ -147,8 +147,8 @@ const symptoms = [
 
   <section class="section">
     <div class="section-inner">
-      <p class="section-kicker">指标地图</p>
-      <h2 class="section-heading">四个指标，回答四个不同问题。</h2>
+      <p class="section-kicker">认识网络指标</p>
+      <h2 class="section-heading">游戏网络里的几个数字，分别是什么意思？</h2>
 
       <table class="metric-table" data-reveal>
         <thead>
@@ -196,7 +196,7 @@ const symptoms = [
   <section class="section" style="padding-top: 0">
     <div class="section-inner">
       <p class="section-kicker">常见问题</p>
-      <h2 class="section-heading">从最常见的误判开始。</h2>
+      <h2 class="section-heading">常见游戏网络问题</h2>
 
       <div class="guide-list" data-reveal>
         {
@@ -223,8 +223,8 @@ const symptoms = [
   <section class="section section-dark">
     <div class="section-inner tool-band">
       <div>
-        <p class="section-kicker">可复现记录</p>
-        <h2 class="section-heading">把“感觉很卡”变成可复核的证据。</h2>
+        <p class="section-kicker">保存测试结果</p>
+        <h2 class="section-heading">把测试结果记下来，方便前后比较。</h2>
         <p class="section-intro">
           模板只在浏览器本地填写，不会上传。打印或保存为 PDF
           前，先遮盖公网 IP、账号和设备标识。
@@ -259,9 +259,9 @@ const symptoms = [
 
   <section class="closing">
     <div class="closing-inner">
-      <h2>先保留一份完整记录，再决定下一步。</h2>
+      <h2>卡顿反复出现？按步骤再查一遍。</h2>
       <a class="button" href={pathWithBase('/diagnose/game-lag-diagnostic-tree/')}>
-        进入完整诊断树 <span aria-hidden="true">→</span>
+        查看完整排查指南 <span aria-hidden="true">→</span>
       </a>
     </div>
   </section>
@@ -285,7 +285,7 @@ const symptoms = [
             candidate.setAttribute('aria-pressed', String(candidate === button)),
           );
           const normalizedBase = base.replace(/\/$/, '');
-          indexNode.textContent = `DIAGNOSIS ${String(index + 1).padStart(2, '0')}`;
+          indexNode.textContent = `问题 ${String(index + 1).padStart(2, '0')}`;
           titleNode.textContent = item.title;
           bodyNode.textContent = item.body;
           linkNode.href = `${normalizedBase}${item.href}`;

@@ -2,20 +2,17 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { pathWithBase } from '../data/site';
 ---
-<BaseLayout title="测量与编辑方法" description="低延迟实验室如何定义指标、设计对照、引用来源与更新内容。">
+<BaseLayout title="如何测试游戏网络" description="不知道从哪里开始？了解如何查默认网关、记录 Ping 结果，以及比较 Wi-Fi 和有线连接。">
   <article class="simple-page">
-    <p class="eyebrow">Methodology</p><h1>测量与编辑方法</h1>
-    <p class="lead">每篇诊断内容都要把事实、推断和建议分开。我们优先使用标准、官方技术文档和可复现的单变量对照。</p>
-    <h2>一、先定义，再测量</h2>
-    <p>重要术语优先对照 IETF RFC、操作系统厂商文档或游戏服务商公开资料。不同工具若采用不同算法，不把同名数值直接横向比较。</p>
-    <h2>二、从近到远</h2>
-    <p>诊断顺序通常从本机与家庭网关开始，再做 Wi-Fi/有线、空闲/负载对照，最后查看外部路径和服务端线索。这样可以减少把近端问题误判为运营商或服务器问题。</p>
-    <h2>三、一次只改一个变量</h2>
-    <p>对照前后保持设备、游戏服务器区域和测试目标一致。若同时更换网络、设备和时段，即使结果改变也无法知道哪一项起作用。</p>
-    <h2>四、不设万能阈值</h2>
-    <p>游戏类型、服务器位置、网络结构和游戏补偿机制不同。我们解释指标和相对变化，不把单一毫秒数包装成所有场景的合格线。</p>
-    <h2>五、来源与更新</h2>
-    <p>文章末尾列出关键依据，页面标注更新日期。工具行为或公开资料变化时，相关说明也应及时核对。</p>
-    <div class="notice">准备开始测量？先打开<a href={pathWithBase('/tools/network-test-record/')}>网络测试记录模板</a>，在测试前写好只改变的一个条件。</div>
+    <h1>不知道怎么测试网络？从这里开始</h1>
+    <p class="lead">游戏卡顿时，不必一口气改完所有设置。先记下发生时间，测一下家里的网络，再决定要不要检查外部连接。</p>
+    <h2>先找到默认网关</h2>
+    <p>Windows 按 Win+R，输入 cmd，然后运行 <code>ipconfig</code>，找到正在使用的网络适配器下的“默认网关”。macOS 可在系统设置的网络详情中查看路由器地址。</p>
+    <h2>记录连续 Ping 结果</h2>
+    <p>在 Windows 命令提示符中输入 <code>ping -n 100 网关地址</code>，把“网关地址”替换成刚查到的实际地址。看看有没有突然升高的 RTT，或未收到回应的请求。部分设备可能限制 Ping 应答，超时不一定是网络断开。</p>
+    <h2>再用网线和 Wi-Fi 比较</h2>
+    <p>尽量使用同一台设备、相同测试目标，在接近的时间分别测试 Wi-Fi 和有线连接。只换连接方式，才更容易看出差异。还可以分别在空闲时和后台上传时测试。</p>
+    <h2>看不懂结果怎么办？</h2>
+    <p>把测试结果粘贴到<a href={pathWithBase('/tools/network-analyzer/')}>网络分析器</a>，查看延迟波动和超时样本；如果游戏还是卡，可以继续阅读<a href={pathWithBase('/diagnose/game-lag-diagnostic-tree/')}>游戏卡顿排查指南</a>。</p>
   </article>
 </BaseLayout>

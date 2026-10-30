@@ -1,7 +1,7 @@
 export const SITE_NAME = '低延迟实验室';
 
 export const SITE_DESCRIPTION =
-  '面向在线游戏玩家的网络测量与故障定位知识站：解释 Ping、RTT、丢包和延迟波动，并给出可复现的排查路径。';
+  '游戏卡顿、Ping 忽高忽低怎么办？查看 Wi-Fi、延迟、丢包排查指南，分析 Ping 日志，找到下一步该检查什么。';
 
 export function pathWithBase(path = '/') {
   const base = import.meta.env.BASE_URL.replace(

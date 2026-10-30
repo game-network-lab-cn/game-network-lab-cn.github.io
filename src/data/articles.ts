@@ -194,7 +194,7 @@ export const articles: Article[] = [
     slug: 'burst-packet-loss',
     section: 'metrics',
     title: '突发丢包为什么比一个平均比例更值得看',
-    description: '解释连续丢包、零星丢包和平均丢包率的差异，提供可复现的记录方式。',
+    description: '解释连续丢包、零星丢包和平均丢包率的差异，说明如何记录和比较测试结果。',
     eyebrow: '丢包模式',
     readTime: '3 分钟',
     publishedDate: '2026-08-21',
@@ -255,7 +255,7 @@ export const articles: Article[] = [
         ],
       },
       {
-        heading: '第 2 步：做单变量对照',
+        heading: '第 2 步：每次只改变一个条件',
         paragraphs: [
           '先在同一设备、同一网关和尽量相同的时段对照 Wi-Fi 与有线连接；再固定接入方式，对照空闲与存在后台上传时的结果。测试时记录同一个目标，避免同时更换设备、服务器区域和连接方式。如果只有 Wi-Fi 出现尖峰，优先检查干扰与信号；如果有线也仅在上传时恶化，检查上行占用和路由器队列。单次改善不代表因果已经确定，建议重复对照。',
         ],
